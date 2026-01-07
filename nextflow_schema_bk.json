@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/nf-core/sarek/master/nextflow_schema.json",
+  "title": "nf-core/sarek pipeline parameters",
+  "description": "An open-source analysis pipeline to detect germline or somatic variants from whole genome or targeted sequencing",
+  "type": "object",
+  "$defs": {
+    "input_output_options": {
+      "title": "Input/output options",
+      "type": "object",
+      "fa_icon": "fas fa-terminal",
+      "description": "Define where the pipeline should find input data and save output data.",
+      "required": [
+        "input",
+        "outdir"
+      ],
+      "properties": {
+        "input": {
+          "type": "string",
+          "title": "Sample sheet (CSV)",
+          "format": "file-path",
+          "exists": true,
+          "schema": "assets/schema_input.json",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$",
+          "description": "Path to comma-separated file containing information about the samples in the experiment.",
+          "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+          "fa_icon": "fas fa-file-csv",
+          "default": "samples.csv",
+          "schemaResolved": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "https://raw.githubusercontent.com/your-org/rnaseq-pipeline/master/assets/schema_input.json",
+            "title": "SAREK Pipeline - Sample Sheet Schema",
+            "description": "Schema for the sample sheet file provided with params.input",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sample": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]*$",
+                  "minLength": 1,
+                  "maxLength": 50,
+                  "errorMessage": "Sample name must start with alphanumeric character, contain only letters, numbers, hyphens, and underscores, and be 1-50 characters long",
+                  "meta": [
+                    "id"
+                  ],
+                  "description": "Unique sample identifier"
+                },
+                "fastq_1": {
+                  "type": "string",
+                  "pattern": "^\\S+\\.(fastq|fq)(\\.gz)?$",
+                  "errorMessage": "FastQ file for reads 1 must be provided, cannot contain spaces and must have extension '.fq', '.fastq', '.fq.gz' or '.fastq.gz'",
+                  "format": "file-path",
+                  "exists": true,
+                  "description": "Path to FastQ file containing forward reads (R1)"
+                },
+                "fastq_2": {
+                  "type": "string",
+                  "pattern": "^\\S+\\.(fastq|fq)(\\.gz)?$",
+                  "errorMessage": "FastQ file for reads 2, optional, cannot contain spaces and must have extension '.fq', '.fastq', '.fq.gz' or '.fastq.gz'",
+                  "format": "file-path",
+                  "exists": true,
+                  "description": "Path to FastQ file containing reverse reads (R2)"
+                }
+              },
+              "required": [
+                "sample",
+                "fastq_1"
+              ],
+              "additionalProperties": false,
+              "errorMessage": {
+                "additionalProperties": "Only required properties are: sample, fastq_1"
+              }
+            },
+            "minItems": 1,
+            "uniqueItems": true,
+            "errorMessage": {
+              "minItems": "Sample sheet must contain at least one sample",
+              "uniqueItems": "Sample names must be unique"
+            }
+          }
+        },
+        "outdir": {
+          "type": "string",
+          "title": "Output directory",
+          "format": "directory-path",
+          "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+          "fa_icon": "fas fa-folder-open",
+          "default": "output",
+          "hidden": true
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/input_output_options"
+    }
+  ],
+  "required": [
+    "organism",
+    "s3_bucket"
+  ],
+  "properties": {
+    "organism": {
+      "type": "string",
+      "title": "Organism",
+      "description": "Select your organism to use the appropriate reference files (Default: yeast).",
+      "enum": [
+        "yeast",
+        "human",
+        "mouse",
+        "monkey",
+        "rat"
+      ],
+      "default": "yeast"
+    },
+    "s3_bucket": {
+      "type": "string",
+      "title": "S3 bucket (no s3:// prefix)",
+      "description": "AWS S3 bucket name used for reference and output paths.",
+      "default": "app-bridge-horizon-paas-bucket",
+      "hidden": true
+    }
+  }
+}

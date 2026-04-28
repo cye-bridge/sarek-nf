@@ -232,3 +232,4 @@ You can cite the `nf-core` publication as follows:
 ## CHANGELOG
 
 - [CHANGELOG](CHANGELOG.md)
+a
